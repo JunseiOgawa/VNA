@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "会話録音ネタ提供AI",
+  "description": "会話の録音、文字起こし、AIによる話題提供を通じて、コミュニケーションをサポートする拡張機能",
+  "permissions": [
+    "unlimitedStorage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "background",
+    "storage"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "version": "0.0.1",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+      "32": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+      "48": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+      "128": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png"
+    }
+  },
+  "options_page": "options.html",    
+  "options_ui": {                   
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+    "32": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+    "48": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png",
+    "128": "public/images/Gemini_Generated_Image_w0qjmw0qjmw0qjmw (16).png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' http://localhost:*; object-src 'self'"
+  }
+}
