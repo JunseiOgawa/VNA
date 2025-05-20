@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>会話提案</title>
+    <link rel="stylesheet" href="recorder.css">
+    <link rel="stylesheet" href="modal-styles.css">
+    <style>
+        /* モーダル関連のスタイル */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: all 0.3s;
+        }
+        
+        /* 話題モーダルのスタイル（大きなフォントと余白） */
+        #topicModalList li {
+            font-size: 1.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>    <!-- トピック提案用モーダル -->
+    <div id="topicModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>話題の提案</h2>
+                <button id="closeTopicModal" class="close-button">✕</button>
+            </div>
+            <ul id="topicModalList" class="topic-list"></ul>
+            <div class="shortcut-hint">表示/非表示: Alt+T</div>
+        </div>
+    </div>
+    
+    <!-- 過去の話題モーダル -->
+    <div id="historyTopicModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>過去の話題</h2>
+                <button id="closeHistoryModal" class="close-button">✕</button>
+            </div>
+            <div id="historyTopicContent" class="history-content"></div>
+        </div>
+    </div>
+
+    <div class="container">        <h1>会話提案</h1>
+        
+        <!-- 録音ステータスと時間 -->
+        <div id="statusContainer" class="status-container">
+            <div id="recordingStatus" class="status">収録待機中...</div>
+            <div id="timer" class="timer">00:00</div>
+        </div>
+        
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <!-- ボタン -->
+            <div class="button-container">
+                <button id="recordButton" class="primary-button">文字起こし開始</button>
+                <button id="stopButton" class="secondary-button" disabled>文字起こし停止</button>
+                <button id="downloadButton" class="secondary-button" disabled>ダウンロード</button>
+            </div>
+            
+            <div id="errorMessages" class="error"></div>
+            
+            <!-- 音声プレイヤー -->
+            <div id="audioPlayback" style="display: none;">
+                <h2>文字起こしされた音声</h2>
+                <audio id="audioPlayer" controls></audio>
+            </div>
+            
+            <!-- 文字起こし結果 -->
+            <div id="transcriptContainer" style="display: none;">
+                <h2>文字起こし結果</h2>
+                <div id="transcript" class="transcript-area"></div>
+                <div id="transcriptStatus" class="status-text">文字起こしは録音と同時に行われます</div>
+                <div id="networkStatus" class="status-text"></div>
+            </div>
+            
+            <!-- 話題の提案 -->
+            <div id="topicSuggestionsContainer">
+                <div class="topic-header">
+                    <h2>話題の提案</h2>
+                    <div class="topic-controls">
+                        <button id="viewHistoryTopics" class="secondary-button small-button">
+                            過去の話題を見る
+                        </button>
+                        <label class="toggle-switch">
+                            <span class="toggle-label">話題モード</span>
+                            <div class="toggle-container">
+                                <input id="topicModeToggle" type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <ul id="topicSuggestionsList" class="topic-list"></ul>
+                <p id="topicError" class="error"></p>
+            </div>
+        </div>
+        
+        <!-- サイドバー -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>会話履歴</h2>
+                <button id="clearHistoryButton" class="secondary-button small-button">
+                    履歴をクリア
+                </button>
+            </div>
+            <div id="conversationHistory" class="conversation-history"></div>
+        </div>
+    </div>
+    <script src="recorder.js"></script>
+</body>
+</html>

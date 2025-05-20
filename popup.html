@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプル録音機能</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 250px;
+            margin: 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            font-size: 18px;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .menu-button {
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .record-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .record-button:hover {
+            background-color: #c0392b;
+        }
+        
+        .settings-button {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .settings-button:hover {
+            background-color: #bdc3c7;
+        }
+        
+        .button-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>シンプル録音機能</h1>
+    <div class="menu-container">
+        <button id="openRecorderButton" class="menu-button record-button">
+            <span class="button-icon">🎙️</span>録音を開始する
+        </button>
+        <button id="openSettingsButton" class="menu-button settings-button">
+            <span class="button-icon">⚙️</span>設定
+        </button>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

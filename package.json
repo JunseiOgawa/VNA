@@ -1,0 +1,37 @@
+{
+  "name": "vna",
+  "version": "0.0.1",
+  "description": "会話録音ネタ提供AI",
+  "main": "src/popup.ts",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --watch --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.260",
+    "@types/webextension-polyfill": "^0.10.7",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.4.2",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JunseiOgawa/VNA.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/JunseiOgawa/VNA/issues"
+  },
+  "homepage": "https://github.com/JunseiOgawa/VNA#readme"
+}

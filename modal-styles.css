@@ -1,0 +1,97 @@
+/* 話題モーダル強調スタイル */
+.speech-bubble {
+  position: relative;
+  background: #f0f7ff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 6px solid #4285f4;
+  box-shadow: 0 4px 15px rgba(66, 133, 244, 0.15);
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  bottom: -15px;
+  border-width: 15px 15px 0;
+  border-style: solid;
+  border-color: #f0f7ff transparent;
+}
+
+/* 話題モーダルのホバーエフェクト */
+#topicModalList li {
+  transition: all 0.2s ease;
+}
+
+#topicModalList li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(66, 133, 244, 0.2);
+}
+
+/* 会話中の注目スタイル */
+.highlight-topic {
+  background: linear-gradient(to right, rgba(66, 133, 244, 0.1), transparent);
+  animation: pulse-light 2s infinite;
+}
+
+@keyframes pulse-light {
+  0% {
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(66, 133, 244, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+  }
+}
+
+/* モーダルウィンドウの拡張スタイル */
+.modal-overlay.active .modal-content {
+  animation: bounce-in 0.5s;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 過去の話題の日付ヘッダースタイル */
+.history-date {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.history-date:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #4285f4;
+  border-radius: 50%;
+}
+
+/* キーボードショートカットヒント */
+.shortcut-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 0.75rem;
+  color: #777;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
