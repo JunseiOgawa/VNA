@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "シンプル録音機能",
+  "name": "VNA-製",
   "description": "ブラウザで簡単に音声を録音する機能",
   "permissions": [
     "tabs",

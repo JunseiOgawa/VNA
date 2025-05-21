@@ -2,89 +2,66 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>会話提案</title>
+    <link rel="stylesheet" href="public/output.css">
     <link rel="stylesheet" href="recorder.css">
-    <link rel="stylesheet" href="modal-styles.css">
-    <style>
-        /* モーダル関連のスタイル */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            width: 90%;
-            max-width: 700px;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: scale(0.8);
-            transition: all 0.3s;
-        }
-        
-        /* 話題モーダルのスタイル（大きなフォントと余白） */
-        #topicModalList li {
-            font-size: 1.5rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            line-height: 1.5;
-        }
-        
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-    </style>
+    <script>
+        // モーダルのアニメーション用JavaScript
+        document.addEventListener('DOMContentLoaded', () => {
+            window.showModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('opacity-0', 'invisible');
+                    modal.classList.add('opacity-100', 'visible');
+                    modal.querySelector('.modal-content').classList.remove('scale-90');
+                    modal.querySelector('.modal-content').classList.add('scale-100');
+                }
+            };
+            
+            window.hideModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('opacity-100', 'visible');
+                    modal.classList.add('opacity-0', 'invisible');
+                    modal.querySelector('.modal-content').classList.remove('scale-100');
+                    modal.querySelector('.modal-content').classList.add('scale-90');
+                }
+            };
+        });
+    </script>
 </head>
 <body>    <!-- トピック提案用モーダル -->
-    <div id="topicModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>話題の提案</h2>
-                <button id="closeTopicModal" class="close-button">✕</button>
+    <div id="topicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-[700px] max-h-[80vh] overflow-y-auto transform scale-90 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">話題の提案</h2>
+                <button id="closeTopicModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            <ul id="topicModalList" class="topic-list"></ul>
-            <div class="shortcut-hint">表示/非表示: Alt+T</div>
+            <ul id="topicModalList" class="space-y-3">
+                <!-- ここに動的に話題が追加されます -->
+            </ul>
+            <div class="text-sm text-gray-500 mt-4">表示/非表示: Alt+T</div>
         </div>
     </div>
     
     <!-- 過去の話題モーダル -->
-    <div id="historyTopicModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>過去の話題</h2>
-                <button id="closeHistoryModal" class="close-button">✕</button>
+    <div id="historyTopicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-[700px] max-h-[80vh] overflow-y-auto transform scale-90 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">過去の話題</h2>
+                <button id="closeHistoryModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            <div id="historyTopicContent" class="history-content"></div>
+            <div id="historyTopicContent" class="max-h-[60vh] overflow-y-auto">
+                <!-- ここに過去の話題が表示されます -->
+            </div>
         </div>
-    </div>
-
-    <div class="container">        <h1>会話提案</h1>
+    </div><div class="container shadow-lg">        <h1 class="text-2xl font-bold mb-5">会話提案</h1>
         
         <!-- 録音ステータスと時間 -->
-        <div id="statusContainer" class="status-container">
-            <div id="recordingStatus" class="status">収録待機中...</div>
-            <div id="timer" class="timer">00:00</div>
+        <div id="statusContainer" class="status-container rounded-lg">
+            <div id="recordingStatus" class="status text-gray-600">収録待機中...</div>
+            <div id="timer" class="timer font-semibold">00:00</div>
         </div>
         
         <!-- メインコンテンツ -->
@@ -145,6 +122,8 @@
             <div id="conversationHistory" class="conversation-history"></div>
         </div>
     </div>
-    <script src="recorder.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/recorder.js"></script>
 </body>
 </html>

@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const topicModal = document.getElementById('topicModal');
     const topicModalList = document.getElementById('topicModalList');
     const closeTopicModal = document.getElementById('closeTopicModal');
-    const toggleFixedMode = document.getElementById('toggleFixedMode'); // 固定表示モード切り替えボタン
     const topicModeToggle = document.getElementById('topicModeToggle');
     const historyTopicModal = document.getElementById('historyTopicModal');
     const historyTopicContent = document.getElementById('historyTopicContent');
@@ -44,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let topicSuggestionInterval = null; // 話題提案のインターバルID
     let isTopicModeActive = false; // 話題モードの状態
     let topicSuggestions = []; // 現在の話題提案
-    let isFixedMode = false; // 固定モード状態
 
     console.log('録音スクリプトが初期化されました');
 
