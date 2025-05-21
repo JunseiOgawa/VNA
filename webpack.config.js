@@ -17,18 +17,18 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
     ],
-  },  plugins: [
-    new CopyWebpackPlugin({
+  },  plugins: [    new CopyWebpackPlugin({
       patterns: [        { from: 'manifest.json', to: '' },
         { from: 'public', to: 'public' },
         { from: 'popup.html', to: '' },
         { from: 'recorder.html', to: '' },
         { from: 'options.html', to: '' },
         { from: 'popup.js', to: '' },
-        { from: 'recorder.js', to: '' },  
+        { from: 'recorder.js', to: '' },
         { from: 'recorder.css', to: '' },
         { from: 'modal-styles.css', to: '' },
-        { from: 'options.js', to: '' },        { from: 'background.js', to: '' }
+        { from: 'options.js', to: '' },
+        { from: 'background.js', to: '' }
       ],
     }),
   ],

@@ -6,30 +6,6 @@
     <title>会話提案</title>
     <link rel="stylesheet" href="public/output.css">
     <link rel="stylesheet" href="recorder.css">
-    <script>
-        // モーダルのアニメーション用JavaScript
-        document.addEventListener('DOMContentLoaded', () => {
-            window.showModal = (modalId) => {
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.remove('opacity-0', 'invisible');
-                    modal.classList.add('opacity-100', 'visible');
-                    modal.querySelector('.modal-content').classList.remove('scale-90');
-                    modal.querySelector('.modal-content').classList.add('scale-100');
-                }
-            };
-            
-            window.hideModal = (modalId) => {
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.remove('opacity-100', 'visible');
-                    modal.classList.add('opacity-0', 'invisible');
-                    modal.querySelector('.modal-content').classList.remove('scale-100');
-                    modal.querySelector('.modal-content').classList.add('scale-90');
-                }
-            };
-        });
-    </script>
 </head>
 <body>    <!-- トピック提案用モーダル -->
     <div id="topicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
@@ -120,8 +96,7 @@
                 </button>
             </div>
             <div id="conversationHistory" class="conversation-history"></div>
-        </div>
-    </div>
+        </div>    
+    </div>    
     <script src="recorder.js"></script>
-</body>
 </html>

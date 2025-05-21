@@ -179,6 +179,14 @@ audio {
     font-size: 16px;
     color: #555;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.conversation-entry h3 .timestamp {
+    font-size: 12px;
+    color: #777;
 }
 
 .conversation-content {
@@ -188,6 +196,28 @@ audio {
 .conversation-content p {
     margin: 5px 0;
     padding: 5px 0;
+}
+
+/* 会話履歴のページャー */
+.history-pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.pager-button {
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #4285f4;
+}
+
+.pager-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* トグルスイッチ */
@@ -252,6 +282,18 @@ input:checked + .toggle-slider:before {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+}
+
+/* モーダル表示時のスタイル */
+#topicModal.active,
+#historyTopicModal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+#topicModal.active .modal-content,
+#historyTopicModal.active .modal-content {
+    transform: scale(1);
 }
 
 .close-button {
@@ -332,4 +374,36 @@ input:checked + .toggle-slider:before {
 .history-content {
     max-height: 60vh;
     overflow-y: auto;
+}
+
+/* 深掘り情報を持つ話題のスタイル */
+.topic-list li.has-deepdive {
+    border-left: 3px solid #4285f4;
+    padding-left: 9px;
+    position: relative;
+}
+
+.topic-list li.has-deepdive:after {
+    content: "?";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4285f4;
+    font-size: 12px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    background: rgba(66, 133, 244, 0.1);
+}
+
+.deepdive-info {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed #eee;
 }
