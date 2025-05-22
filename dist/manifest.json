@@ -5,7 +5,8 @@
   "permissions": [
     "tabs",
     "activeTab",
-    "storage"
+    "storage",
+    "windows"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -28,5 +29,9 @@
     "32": "public/images/icon-32.png",
     "48": "public/images/icon-48.png",
     "128": "public/images/icon-128.png"
-  }
+  },
+  "web_accessible_resources": [{
+    "resources": ["recorder.css", "public/output.css"],
+    "matches": ["<all_urls>"]
+  }]
 }

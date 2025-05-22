@@ -20,10 +20,13 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 // オプションで、メッセージリスナーを追加
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('バックグラウンドスクリプトでメッセージを受信:', message);
+  console.log('バックグラウンドスクリプトがメッセージを受信しました:', message);
   
-  // 必要に応じて処理を行う
+  // popupReady アクションのみを処理し、他の不要な処理を削除
+  if (message.action === 'popupReady') {
+    console.log('ポップアップの準備ができました');
+    sendResponse({ success: true });
+  }
   
-  // 非同期レスポンスの場合はtrueを返す
-  return true;
+  return true; // 非同期応答を行うため true を返す
 });

@@ -10,8 +10,8 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./public/output.css",
     "watch:css": "tailwindcss -i ./src/input.css -o ./public/output.css --watch"
   },
-  "author": "",
   "license": "ISC",
+  "author": "",
   "devDependencies": {
     "@types/chrome": "^0.0.260",
     "@types/webextension-polyfill": "^0.10.7",

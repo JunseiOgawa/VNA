@@ -6,9 +6,28 @@ const VNAUI = (function() {
   let elements = {};
   let timerInterval = null;
   let topicSuggestions = [];
-  let isTopicModeActive = false;
-  let isFixedMode = false;
+  let topicPopupFullTopicInfo = []; // ポップアップ用の深掘り情報
   let isFillerRemovalEnabled = false;
+  let topicPopupWindow = null; // ポップアップウィンドウの参照
+  let topicPopupWindowId = null; // chrome.windows.create()で作成したウィンドウID
+  let historyPopupWindow = null; // 履歴ポップアップウィンドウの参照
+  let embeddedTopicPopupModal = null; // 埋め込み用モーダルの参照
+  
+  // 親ウィンドウの動作
+  const PARENT_ACTION_NONE = 'none';
+  const PARENT_ACTION_MINIMIZE = 'minimize';
+  const PARENT_ACTION_CLOSE = 'close';
+
+  // 選択されている親ウィンドウの動作を取得
+  function getSelectedParentAction() {
+    if (elements.parentActionMinimize && elements.parentActionMinimize.checked) {
+      return PARENT_ACTION_MINIMIZE;
+    }
+    if (elements.parentActionClose && elements.parentActionClose.checked) {
+      return PARENT_ACTION_CLOSE;
+    }
+    return PARENT_ACTION_NONE;
+  }
   
   return {
     // 初期化
@@ -38,11 +57,66 @@ const VNAUI = (function() {
         historyTopicContent: document.getElementById('historyTopicContent'),
         closeHistoryModal: document.getElementById('closeHistoryModal'),
         viewHistoryTopics: document.getElementById('viewHistoryTopics'),
-        fillerRemovalToggle: document.getElementById('fillerRemovalToggle')
+        fillerRemovalToggle: document.getElementById('fillerRemovalToggle'),
+        launchTopicWindowButton: document.getElementById('launchTopicWindowButton'), // 追加
+        parentActionNone: document.getElementById('parentActionNone'),
+        parentActionMinimize: document.getElementById('parentActionMinimize'),
+        parentActionClose: document.getElementById('parentActionClose'),
+        embeddedTopicPopupModal: document.getElementById('embeddedTopicPopupModal'),
+        closeEmbeddedTopicPopup: document.getElementById('closeEmbeddedTopicPopup'),
+        popupTopicListEmbedded: document.getElementById('popupTopicListEmbedded')
       };
       
       // モーダル関連のイベントリスナーを設定
       this.setupModalListeners();
+      
+      // 閉じるボタン
+      if (elements.closeEmbeddedTopicPopup) {
+        elements.closeEmbeddedTopicPopup.addEventListener('click', () => {
+          this.hideEmbeddedTopicPopup();
+        });
+      }
+      
+      // 話題ウィンドウ起動ボタンのイベントリスナー
+      if (elements.launchTopicWindowButton) {
+        elements.launchTopicWindowButton.addEventListener('click', () => {
+          // 親ウィンドウの動作を取得
+          const selectedAction = getSelectedParentAction();
+          
+          // バックグラウンドスクリプトにメッセージを送信して新しいウィンドウを開く
+          chrome.runtime.sendMessage({
+            action: 'openTopicWindow',
+            parentAction: selectedAction
+          }, (response) => {
+            if (chrome.runtime.lastError) {
+              console.error('メッセージ送信エラー:', chrome.runtime.lastError);
+              this.showError('話題ウィンドウを開けませんでした：' + chrome.runtime.lastError.message);
+              return;
+            }
+            
+            if (response && response.success) {
+              console.log('話題ウィンドウが開かれました。ID:', response.windowId);
+              
+              // ウィンドウIDを保存
+              topicPopupWindowId = response.windowId;
+              
+              // 現在の話題があれば送信
+              if (topicSuggestions.length > 0) {
+                setTimeout(() => {
+                  chrome.runtime.sendMessage({
+                    action: 'sendTopicsToPopup',
+                    windowId: topicPopupWindowId,
+                    topics: topicSuggestions,
+                    fullTopicInfo: topicPopupFullTopicInfo
+                  });
+                }, 500); // ウィンドウが完全にロードされるまで少し待つ
+              }
+            } else {
+              this.showError('話題ウィンドウを開けませんでした。');
+            }
+          });
+        });
+      }
       
       // ローカルストレージから設定を取得
       VNAStorage.getUiSettings(settings => {
@@ -76,6 +150,15 @@ const VNAUI = (function() {
           VNARecorder.toggleFillerRemoval(isEnabled);
         });
       }
+
+      // ウィンドウメッセージイベントリスナーを設定
+      window.addEventListener('message', (event) => {
+        // readyイベントを受信したら、ポップアップウィンドウが準備完了
+        if (event.source === topicPopupWindow && event.data && event.data.type === 'VNA_POPUP_READY') {
+          // ポップアップウィンドウが準備完了したら、最新のトピックを送信
+          this.sendTopicsToPopup();
+        }
+      });
       
       return this;
     },
@@ -223,6 +306,7 @@ const VNAUI = (function() {
       
       elements.topicSuggestionsList.innerHTML = '';
       topicSuggestions = suggestions;
+      topicPopupFullTopicInfo = fullTopicInfo; // 深掘り情報を保存
       
       // モーダル用リストもクリア
       if (elements.topicModalList) {
@@ -269,6 +353,9 @@ const VNAUI = (function() {
       if (isTopicModeActive) {
         this.showTopicModal();
       }
+      
+      // ポップアップウィンドウが開いていれば、そちらにも最新のトピックを送信
+      this.sendTopicsToPopup();
     },
     
     // 話題モーダルの表示
@@ -291,6 +378,20 @@ const VNAUI = (function() {
     hideTopicModal: function() {
       if (!elements.topicModal) return;
       elements.topicModal.classList.remove('active');
+    },
+    
+    // 埋め込みモーダルの表示
+    showEmbeddedTopicPopup: function() {
+      if (elements.embeddedTopicPopupModal) {
+        elements.embeddedTopicPopupModal.classList.add('active');
+      }
+    },
+    
+    // 埋め込みモーダルの非表示
+    hideEmbeddedTopicPopup: function() {
+      if (elements.embeddedTopicPopupModal) {
+        elements.embeddedTopicPopupModal.classList.remove('active');
+      }
     },
     
     // 固定表示モードの切り替え
@@ -330,7 +431,46 @@ const VNAUI = (function() {
       elements.historyTopicModal.classList.remove('active');
     },
     
-    // モーダル関連のイベントリスナー設定
+    // トピック提案モーダルを開く
+    openTopicPopupWindow: function() {
+      this.showEmbeddedTopicPopup();
+      this.sendTopicsToEmbeddedPopup();
+    },
+    
+    // トピックデータを送信
+    sendTopicsToPopup: function() {
+      this.sendTopicsToEmbeddedPopup();
+    },
+    
+    // 埋め込みモーダルにトピックデータを表示
+    sendTopicsToEmbeddedPopup: function() {
+      if (!elements.popupTopicListEmbedded) return;
+      elements.popupTopicListEmbedded.innerHTML = ''; // Clear existing topics
+
+      if (!topicSuggestions || topicSuggestions.length === 0) {
+        const emptyMessage = document.createElement('li');
+        emptyMessage.className = 'empty-message';
+        emptyMessage.textContent = '表示する話題がありません。';
+        elements.popupTopicListEmbedded.appendChild(emptyMessage);
+        return;
+      }
+
+      topicSuggestions.forEach((suggestion, index) => {
+        const li = document.createElement('li');
+        li.textContent = suggestion;
+        if (topicPopupFullTopicInfo && topicPopupFullTopicInfo[index]) {
+          const deepDiveMatch = topicPopupFullTopicInfo[index].match(/\(深掘り:.*?\)/i);
+          if (deepDiveMatch) {
+            const deepDiveElement = document.createElement('div');
+            deepDiveElement.className = 'deepdive-info';
+            deepDiveElement.textContent = deepDiveMatch[0];
+            li.appendChild(deepDiveElement);
+          }
+        }
+        elements.popupTopicListEmbedded.appendChild(li);
+      });
+    },
+    
     setupModalListeners: function() {
       // 話題モーダルの閉じるボタン
       if (elements.closeTopicModal) {
@@ -347,17 +487,18 @@ const VNAUI = (function() {
         elements.viewHistoryTopics.addEventListener('click', () => this.showHistoryModal());
       }
       
+      // 話題ウィンドウ起動ボタン
+      if (elements.launchTopicWindowButton) {
+        elements.launchTopicWindowButton.addEventListener('click', () => {
+          this.openTopicPopupWindow();
+        });
+      }
+      
       // 話題モードトグル
       if (elements.topicModeToggle) {
         elements.topicModeToggle.addEventListener('change', () => {
           isTopicModeActive = elements.topicModeToggle.checked;
           VNAStorage.saveUiSetting('isTopicModeActive', isTopicModeActive);
-          
-          if (isTopicModeActive && topicSuggestions.length > 0) {
-            this.showTopicModal();
-          } else {
-            this.hideTopicModal();
-          }
         });
       }
       
@@ -374,11 +515,19 @@ const VNAUI = (function() {
         }
       });
       
+      // 埋め込みモーダルの外クリックで閉じる
+      elements.embeddedTopicPopupModal?.addEventListener('click', (e) => {
+        if (e.target === elements.embeddedTopicPopupModal) {
+          this.hideEmbeddedTopicPopup();
+        }
+      });
+      
       // キーボードショートカット
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           this.hideTopicModal();
           this.hideHistoryModal();
+          this.hideEmbeddedTopicPopup();
         }
       });
     }
@@ -1080,6 +1229,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('downloadButton').addEventListener('click', function() {
         VNARecorder.downloadRecording();
     });
+    
+    // 親ウィンドウアクションのラジオボタンイベントリスナー
+    const parentActionRadios = document.querySelectorAll('input[name="parentWindowAction"]');
+    if (parentActionRadios.length > 0) {
+      parentActionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          VNAStorage.saveUiSetting('parentWindowAction', this.value);
+        });
+      });
+
+      VNAStorage.getUiSettings(settings => {
+        if (settings && settings.parentWindowAction) {
+          const currentAction = document.querySelector(`input[name='parentWindowAction'][value='${settings.parentWindowAction}']`);
+          if (currentAction) {
+            currentAction.checked = true;
+          }
+        }
+      });
+    }
     
     // 会話履歴クリアボタンのイベントリスナー
     const clearHistoryButton = document.getElementById('clearHistoryButton');
