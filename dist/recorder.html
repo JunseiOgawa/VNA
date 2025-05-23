@@ -4,91 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>会話提案</title>
-    <link rel="stylesheet" href="public/output.css">
-    <link rel="stylesheet" href="recorder.css">
-    <style>
-        /* PopUpWindow.html からのスタイル */
-        .popup-container-embedded { /* クラス名を変更して衝突を避ける */
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            /* 元の PopUpWindow.html のモーダルとしてのスタイルを適用 */
-            position: fixed; /* モーダルとして表示するため */
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* 背景を暗くする */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 60; /* 他のモーダルより手前に */
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease-in-out;
-        }
-        .popup-container-embedded.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .popup-content-embedded { /* コンテンツ部分のスタイル */
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px; /* サイズ調整 */
-            max-height: 70vh;
-            overflow-y: auto;
-            transform: scale(0.95);
-            transition: all 0.3s ease-in-out;
-        }
-        .popup-container-embedded.active .popup-content-embedded {
-            transform: scale(1);
-        }
-        .popup-header-embedded {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .popup-header-embedded h2 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-        }
-        #popupTopicListEmbedded { /* IDも変更 */
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        #popupTopicListEmbedded li {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            background-color: #f3f4f6;
-            border-radius: 8px;
-            border-left: 4px solid #3b82f6;
-            font-size: 0.95rem;
-            color: #111827;
-        }
-        #popupTopicListEmbedded .deepdive-info { /* PopUpWindow.htmlのスタイルを適用 */
-            font-size: 0.8rem;
-            color: #4b5563; 
-            font-style: italic;
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 1px dashed #d1d5db;
-        }
-        #popupTopicListEmbedded .empty-message { /* PopUpWindow.htmlのスタイルを適用 */
-            text-align: center;
-            color: #6b7280;
-            padding: 1rem 0;
-            font-size: 1rem;
-            border-left: none; /* empty-messageには不要なスタイルをリセット */
-            background-color: transparent;
-        }
-    </style>
+    <link rel="stylesheet" href="output.css">
+    <link rel="stylesheet" href="css/recorder.css">
 </head>
 <body>    <!-- トピック提案用モーダル -->
     <div id="topicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
@@ -214,5 +131,6 @@
         </div>
     </div>
     
-    <script src="recorder.js"></script>
+    <script src="js/recorder.js"></script>
 </html>
+<script defer src="js/recorder.js"></script>

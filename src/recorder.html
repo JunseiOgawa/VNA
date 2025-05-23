@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>会話提案</title>
+    <link rel="stylesheet" href="output.css">
+    <link rel="stylesheet" href="css/recorder.css">
+</head>
+<body>    <!-- トピック提案用モーダル -->
+    <div id="topicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-[700px] max-h-[80vh] overflow-y-auto transform scale-90 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">話題の提案</h2>
+                <button id="closeTopicModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <ul id="topicModalList" class="space-y-3">
+                <!-- ここに動的に話題が追加されます -->
+            </ul>
+            <div class="text-sm text-gray-500 mt-4">表示/非表示: Alt+T</div>
+        </div>
+    </div>
+    
+    <!-- 過去の話題モーダル -->
+    <div id="historyTopicModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 opacity-0 invisible transition-all duration-300">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-[700px] max-h-[80vh] overflow-y-auto transform scale-90 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">過去の話題</h2>
+                <button id="closeHistoryModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div id="historyTopicContent" class="max-h-[60vh] overflow-y-auto">
+                <!-- ここに過去の話題が表示されます -->
+            </div>
+        </div>
+    </div><div class="container shadow-lg">        <h1 class="text-2xl font-bold mb-5">会話提案</h1>
+        
+        <!-- 録音ステータスと時間 -->
+        <div id="statusContainer" class="status-container rounded-lg">
+            <div id="recordingStatus" class="status text-gray-600">収録待機中...</div>
+            <div id="timer" class="timer font-semibold">00:00</div>
+        </div>
+        
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <!-- ボタン -->
+            <div class="button-container">
+                <button id="recordButton" class="primary-button">文字起こし開始</button>
+                <button id="stopButton" class="secondary-button" disabled>文字起こし停止</button>
+                <button id="downloadButton" class="secondary-button" disabled>ダウンロード</button>
+            </div>
+            
+            <div id="errorMessages" class="error"></div>
+            
+            <!-- 音声プレイヤー -->
+            <div id="audioPlayback" style="display: none;">
+                <h2>文字起こしされた音声</h2>
+                <audio id="audioPlayer" controls></audio>
+            </div>
+            
+            <!-- 文字起こし結果 -->
+            <div id="transcriptContainer" style="display: none;">
+                <h2>文字起こし結果</h2>
+                <div id="transcript" class="transcript-area"></div>
+                <div id="transcriptStatus" class="status-text">文字起こしは録音と同時に行われます</div>
+                <div id="networkStatus" class="status-text"></div>
+            </div>
+            
+            <!-- 話題の提案 -->
+            <div id="topicSuggestionsContainer">
+                <div class="topic-header">
+                    <h2>話題の提案</h2>
+                    <div class="topic-controls">
+                        <button id="viewHistoryTopics" class="secondary-button small-button">
+                            過去の話題を見る
+                        </button>
+                        <!-- <label class="toggle-switch">
+                            <span class="toggle-label">話題モード</span>
+                            <div class="toggle-container">
+                                <input id="topicModeToggle" type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label> -->
+                        <button id="launchTopicWindowButton" class="primary-button small-button">話題ウィンドウ起動</button>
+                    </div>
+                </div>
+                <ul id="topicSuggestionsList" class="topic-list"></ul>
+                <p id="topicError" class="error"></p>
+
+                <!-- 新しいオプション設定 -->
+                <div id="topicWindowOptions" class="mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-700 mb-2">話題ウィンドウ起動時の動作:</h3>
+                    <div class="space-y-1">
+                        <div>
+                            <input type="radio" id="parentActionNone" name="parentWindowAction" value="none" class="mr-1" checked>
+                            <label for="parentActionNone" class="text-sm text-gray-600">何もしない</label>
+                        </div>                        <div>
+                            <input type="radio" id="parentActionMinimize" name="parentWindowAction" value="minimize" class="mr-1">
+                            <label for="parentActionMinimize" class="text-sm text-gray-600">親ウィンドウを非表示にする</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="parentActionClose" name="parentWindowAction" value="close" class="mr-1">
+                            <label for="parentActionClose" class="text-sm text-gray-600">親ウィンドウを閉じる</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- サイドバー -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>会話履歴</h2>
+                <button id="clearHistoryButton" class="secondary-button small-button">
+                    履歴をクリア
+                </button>
+            </div>
+            <div id="conversationHistory" class="conversation-history"></div>
+        </div>    
+    </div>    
+
+    <!-- 埋め込み型トピック提案ウィンドウ -->
+    <div id="embeddedTopicPopupModal" class="popup-container-embedded">
+        <div class="popup-content-embedded">
+            <div class="popup-header-embedded">
+                <h2>話題の提案</h2>
+                <button id="closeEmbeddedTopicPopup" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <ul id="popupTopicListEmbedded">
+                <li class="empty-message">提案を待っています...</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="js/recorder.js"></script>
+</html>
